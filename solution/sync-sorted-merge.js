@@ -3,16 +3,13 @@
 const { CustomHeap } = require('@datastructures-js/heap');
 
 function createLogMinHeap() {
-  return new CustomHeap((a, b) => {
-    return a.log.date.getTime() - b.log.date.getTime()
-  });
+  return new CustomHeap((a, b) =>
+    a.log.date.getTime() - b.log.date.getTime()
+  );
 }
 
 // Print all entries, across all of the sources, in chronological order.
-
 module.exports = (logSources, printer) => {
-  // console.log(logSources[0].pop())
-
   const heap = createLogMinHeap()
 
   logSources.forEach((source, index) => {
@@ -23,7 +20,19 @@ module.exports = (logSources, printer) => {
   let earliestLog = heap.extractRoot()
 
   while (earliestLog && earliestLog.log) {
-    printer.print(earliestLog.log)
+    const { index: sourceIndex, log } = earliestLog
+
+    printer.print(log)
+
+    const newLogFromLastSource = logSources[sourceIndex].pop()
+
+    if (newLogFromLastSource) {
+      heap.insert({
+        index: sourceIndex,
+        log: newLogFromLastSource,
+      })
+    }
+
     earliestLog = heap.extractRoot()
   }
 
