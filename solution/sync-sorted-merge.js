@@ -1,12 +1,6 @@
 "use strict";
 
-const { CustomHeap } = require('@datastructures-js/heap');
-
-function createLogMinHeap() {
-  return new CustomHeap((a, b) =>
-    a.log.date.getTime() - b.log.date.getTime()
-  );
-}
+const { createLogMinHeap } = require('./log-heap.js')
 
 // Print all entries, across all of the sources, in chronological order.
 module.exports = (logSources, printer) => {
