@@ -1,37 +1,39 @@
 "use strict";
 
-const { createLogMinHeap } = require('./log-heap.js')
+const { createLogMinHeap } = require("./log-heap.js");
 
 // Print all entries, across all of the *async* sources, in chronological order.
 module.exports = async (logSources, printer) => {
-  const heap = createLogMinHeap()
+  const heap = createLogMinHeap();
 
-  await Promise.all(logSources.map((source, index) =>
-    source.popAsync().then((log) => {
-      heap.insert({ index, log })
-    })
-  ))
+  await Promise.all(
+    logSources.map((source, index) =>
+      source.popAsync().then((log) => {
+        heap.insert({ index, log });
+      })
+    )
+  );
 
-  let earliestLog = heap.extractRoot()
+  let earliestLog = heap.extractRoot();
 
   while (earliestLog && earliestLog.log) {
-    const { index: sourceIndex, log } = earliestLog
+    const { index: sourceIndex, log } = earliestLog;
 
-    printer.print(log)
+    printer.print(log);
 
-    const newLogFromLastSource = await logSources[sourceIndex].popAsync()
+    const newLogFromLastSource = await logSources[sourceIndex].popAsync();
 
     if (newLogFromLastSource) {
       heap.insert({
         index: sourceIndex,
         log: newLogFromLastSource,
-      })
+      });
     }
 
-    earliestLog = heap.extractRoot()
+    earliestLog = heap.extractRoot();
   }
 
-  printer.done()
+  printer.done();
 
-  return console.log('Async sort complete.')
+  return console.log("Async sort complete.");
 };
